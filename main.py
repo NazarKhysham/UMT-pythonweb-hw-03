@@ -99,8 +99,8 @@ class MyHandler(BaseHTTPRequestHandler):
         with open(DATA_FILE, "w", encoding="utf-8") as file:
             json.dump(data, file, ensure_ascii=False, indent=4)
 
-        def send_read_page(self):
-            STORAGE_DIR.mkdir(exist_ok=True)
+    def send_read_page(self):
+        STORAGE_DIR.mkdir(exist_ok=True)
 
         if not DATA_FILE.exists():
             DATA_FILE.write_text("{}", encoding="utf-8")
