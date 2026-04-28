@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Messages</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+    <div class="container mt-3">
+        <h1>Saved messages</h1>
+
+        <a href="/" class="btn btn-primary mb-3">Home</a>
+        <a href="/message" class="btn btn-success mb-3">Send message</a>
+
+        {% if messages %}
+            {% for time, item in messages.items() %}
+                <div class="card mb-3">
+                    <div class="card-header">{{ time }}</div>
+                    <div class="card-body">
+                        <h5 class="card-title">{{ item.username }}</h5>
+                        <p class="card-text">{{ item.message }}</p>
+                    </div>
+                </div>
+            {% endfor %}
+        {% else %}
+            <p>No messages yet.</p>
+        {% endif %}
+    </div>
+</body>
+</html>

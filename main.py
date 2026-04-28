@@ -4,6 +4,7 @@ from datetime import datetime
 from pathlib import Path
 from urllib.parse import parse_qs
 from http.server import HTTPServer, BaseHTTPRequestHandler
+from jinja2 import Environment, FileSystemLoader
 
 
 BASE_DIR = Path(__file__).resolve().parent
@@ -98,8 +99,8 @@ class MyHandler(BaseHTTPRequestHandler):
         with open(DATA_FILE, "w", encoding="utf-8") as file:
             json.dump(data, file, ensure_ascii=False, indent=4)
 
-    def send_read_page(self):
-        STORAGE_DIR.mkdir(exist_ok=True)
+        def send_read_page(self):
+            STORAGE_DIR.mkdir(exist_ok=True)
 
         if not DATA_FILE.exists():
             DATA_FILE.write_text("{}", encoding="utf-8")
@@ -110,43 +111,15 @@ class MyHandler(BaseHTTPRequestHandler):
             except json.JSONDecodeError:
                 data = {}
 
-        messages_html = ""
-
-        for time, message_data in data.items():
-            messages_html += f"""
-            <div class="card mb-3">
-                <div class="card-header">{time}</div>
-                <div class="card-body">
-                    <h5 class="card-title">{message_data.get("username", "")}</h5>
-                    <p class="card-text">{message_data.get("message", "")}</p>
-                </div>
-            </div>
-            """
-
-        html = f"""
-        <!DOCTYPE html>
-        <html lang="en">
-        <head>
-            <meta charset="UTF-8">
-            <title>Messages</title>
-            <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css" rel="stylesheet">
-            <link rel="stylesheet" href="/style.css">
-        </head>
-        <body>
-            <div class="container mt-3">
-                <h1>Saved messages</h1>
-                <a href="/" class="btn btn-primary mb-3">Home</a>
-                <a href="/message" class="btn btn-success mb-3">Send message</a>
-                {messages_html if messages_html else "<p>No messages yet.</p>"}
-            </div>
-        </body>
-        </html>
-        """
+        env = Environment(loader=FileSystemLoader(BASE_DIR))
+        template = env.get_template("read.html")
+        html = template.render(messages=data)
 
         self.send_response(200)
         self.send_header("Content-type", "text/html; charset=utf-8")
         self.end_headers()
         self.wfile.write(html.encode("utf-8"))
+
 
 
 def run():
